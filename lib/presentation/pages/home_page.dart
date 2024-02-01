@@ -129,7 +129,7 @@ class _HomePageState extends State<HomePage> {
                   } else if (state == RequestState.Loaded) {
                     return RoleList(value.allRole);
                   } else {
-                    return Text('Failed');
+                    return Text(value.getAllRoleMessage);
                   }
                 },
               ),
@@ -143,6 +143,10 @@ class _HomePageState extends State<HomePage> {
 
 class RoleList extends StatelessWidget {
   final List<RoleModel> roles;
+
+  final FocusNode editRoleFocus = FocusNode();
+  final TextEditingController editRoleController =
+      TextEditingController(text: '');
 
   RoleList(this.roles);
 
@@ -181,6 +185,15 @@ class RoleList extends StatelessWidget {
                         Container(
                           width: double.infinity,
                           height: 120,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage(
+                                'assets/images/img_popular_default.png',
+                              ),
+                              fit: BoxFit.cover,
+                            ),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                         Padding(
                           padding: const EdgeInsets.only(
@@ -203,7 +216,121 @@ class RoleList extends StatelessWidget {
                               ),
                               Row(
                                 children: [
-                                  Icon(Icons.edit),
+                                  GestureDetector(
+                                    onTap: () async {
+                                      editRoleController.text = role.roleName;
+                                      showModalBottomSheet(
+                                          context: context,
+                                          builder: (context) {
+                                            return Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 30,
+                                                      horizontal: 16),
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  InputTextField(
+                                                    title: 'Role Name',
+                                                    textController:
+                                                        editRoleController,
+                                                    focusNode: editRoleFocus,
+                                                    icon:
+                                                        'assets/icon/ic_add.svg',
+                                                  ),
+                                                  Container(
+                                                    width: double.infinity,
+                                                    height: 55,
+                                                    margin: EdgeInsets.only(
+                                                        top: 24),
+                                                    child: TextButton(
+                                                      style:
+                                                          TextButton.styleFrom(
+                                                        backgroundColor:
+                                                            kGreenColor,
+                                                        shape:
+                                                            RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(12),
+                                                        ),
+                                                      ),
+                                                      onPressed: () async {
+                                                        var body = {
+                                                          "role_name":
+                                                              editRoleController
+                                                                  .text,
+                                                          "is_admin": false,
+                                                          "is_superadmin": false
+                                                        };
+                                                        await provider
+                                                            .putEditRole(
+                                                                body, role.id);
+                                                        if (provider
+                                                            .getEditRole) {
+                                                          Navigator.pop(
+                                                              context);
+                                                          ScaffoldMessenger.of(
+                                                                  context)
+                                                              .showSnackBar(
+                                                            SnackBar(
+                                                              backgroundColor:
+                                                                  kGreenColor,
+                                                              content: Text(
+                                                                "Edit Role Successfully",
+                                                                textAlign:
+                                                                    TextAlign
+                                                                        .center,
+                                                              ),
+                                                            ),
+                                                          );
+                                                        } else {
+                                                          Navigator.pop(
+                                                              context);
+                                                          ScaffoldMessenger.of(
+                                                                  context)
+                                                              .showSnackBar(
+                                                            SnackBar(
+                                                              backgroundColor:
+                                                                  kRedColor,
+                                                              content: Text(
+                                                                provider
+                                                                    .addRoleMessage,
+                                                                textAlign:
+                                                                    TextAlign
+                                                                        .center,
+                                                              ),
+                                                            ),
+                                                          );
+                                                        }
+                                                      },
+                                                      child: provider
+                                                                  .addRoleState ==
+                                                              RequestState
+                                                                  .Loading
+                                                          ? CircularProgressIndicator(
+                                                              color:
+                                                                  kWhiteColor,
+                                                            )
+                                                          : Text(
+                                                              'Edit',
+                                                              style:
+                                                                  whiteTextStyle
+                                                                      .copyWith(
+                                                                fontSize: 16,
+                                                                fontWeight:
+                                                                    medium,
+                                                              ),
+                                                            ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          });
+                                    },
+                                    child: Icon(Icons.edit),
+                                  ),
                                   SizedBox(
                                     width: 8,
                                   ),
@@ -249,6 +376,7 @@ class RoleList extends StatelessWidget {
                   )),
             );
           },
+          padding: EdgeInsets.only(bottom: 120),
           itemCount: roles.length,
         ),
       ),

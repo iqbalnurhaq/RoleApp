@@ -2,16 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:roleapp/data/models/role_model.dart';
 import 'package:roleapp/domain/usecases/add_role.dart';
 import 'package:roleapp/domain/usecases/delete_role.dart';
+import 'package:roleapp/domain/usecases/edit_role.dart';
 import 'package:roleapp/domain/usecases/get_all_role.dart';
 import 'package:roleapp/shared/state_enum.dart';
 
 class HomeNotifier extends ChangeNotifier {
   final GetAllRole getAllRole;
   final AddRole addRole;
+  final EditRole editRole;
   final DeleteRole deleteRole;
   HomeNotifier({
     required this.getAllRole,
     required this.addRole,
+    required this.editRole,
     required this.deleteRole,
   });
 
@@ -45,6 +48,16 @@ class HomeNotifier extends ChangeNotifier {
   bool _deleteRole = false;
   bool get getDeleteRole => _deleteRole;
 
+  // add  role state
+  RequestState _editRoleState = RequestState.Empty;
+  RequestState get editRoleState => _editRoleState;
+
+  String _editRoleMessage = '';
+  String get editRoleMessage => _editRoleMessage;
+
+  bool _getEditRole = false;
+  bool get getEditRole => _getEditRole;
+
   Future<void> fetchAllRole() async {
     _getAllRoleState = RequestState.Loading;
     notifyListeners();
@@ -74,6 +87,24 @@ class HomeNotifier extends ChangeNotifier {
     }, (roleData) {
       _getAddRole = true;
       _addRoleState = RequestState.Loaded;
+      notifyListeners();
+      fetchAllRole();
+    });
+  }
+
+  Future<void> putEditRole(Map<String, dynamic> body, String id) async {
+    _editRoleState = RequestState.Loading;
+    notifyListeners();
+    final result = await editRole.execute(body, id);
+
+    await result.fold((failure) {
+      _getEditRole = false;
+      _editRoleState = RequestState.Error;
+      _editRoleMessage = failure.message;
+      notifyListeners();
+    }, (roleData) {
+      _getEditRole = true;
+      _editRoleState = RequestState.Loaded;
       notifyListeners();
       fetchAllRole();
     });

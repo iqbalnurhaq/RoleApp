@@ -40,4 +40,15 @@ class RoleRepositoryImpl implements RoleRepository {
       return Left(ServerFailure(e.message.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, RoleModel>> editRole(
+      Map<String, dynamic> body, String id) async {
+    try {
+      final result = await remoteDataSource.editRole(body, id);
+      return Right(result);
+    } on ServerFailure catch (e) {
+      return Left(ServerFailure(e.message.toString()));
+    }
+  }
 }
