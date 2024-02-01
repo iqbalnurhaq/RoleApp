@@ -8,6 +8,6 @@ class Login {
   Login(this.repository);
 
   Future<Either<Failure, bool>> execute(Map<String, dynamic> body) {
-    return repository.loign(body);
+    return repository.login(body);
   }
 }

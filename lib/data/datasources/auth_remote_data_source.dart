@@ -17,8 +17,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<AuthResponse> login(Map<String, dynamic> body) async {
-    // Map data = {"email": "addiyat.sandi@gmail.com", "password": "Nashta@2023"};
-
     var data = json.encode(body);
 
     final response = await client.post(

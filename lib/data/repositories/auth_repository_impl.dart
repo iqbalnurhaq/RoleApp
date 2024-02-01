@@ -16,12 +16,11 @@ class AuthRepositoryImpl implements AuthRepository {
   });
 
   @override
-  Future<Either<Failure, bool>> loign(Map<String, dynamic> body) async {
+  Future<Either<Failure, bool>> login(Map<String, dynamic> body) async {
     try {
       final result = await remoteDataSource.login(body);
       if (result.status) {
         await sharedPref.saveString("token", result.data.token.accessToken);
-        print(sharedPref.readString("token"));
         return Right(true);
       } else {
         return Left(ConnectionFailure(''));

@@ -4,6 +4,7 @@ import 'package:roleapp/presentation/pages/home_page.dart';
 import 'package:roleapp/presentation/pages/login_page.dart';
 import 'package:roleapp/presentation/provider/auth_notifier.dart';
 import 'package:roleapp/injection.dart' as di;
+import 'package:roleapp/presentation/provider/home_notifier.dart';
 
 void main() {
   di.init();
@@ -20,11 +21,14 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => di.locator<AuthNotifier>(),
         ),
+        ChangeNotifierProvider(
+          create: (_) => di.locator<HomeNotifier>(),
+        ),
       ],
       child: MaterialApp(
         routes: {
-          '/': (context) => LoginPage(),
-          '/home': (context) => HomePage(),
+          '/login': (context) => LoginPage(),
+          '/': (context) => HomePage(),
         },
       ),
     );
