@@ -30,4 +30,14 @@ class RoleRepositoryImpl implements RoleRepository {
       return Left(ServerFailure(e.message.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, bool>> deleteRole(String id) async {
+    try {
+      final result = await remoteDataSource.deleteRole(id);
+      return Right(result);
+    } on ServerFailure catch (e) {
+      return Left(ServerFailure(e.message.toString()));
+    }
+  }
 }

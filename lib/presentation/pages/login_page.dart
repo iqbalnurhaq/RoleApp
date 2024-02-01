@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:roleapp/presentation/provider/auth_notifier.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:roleapp/presentation/widgets/input/input_text_field.dart';
 import 'package:roleapp/shared/state_enum.dart';
 

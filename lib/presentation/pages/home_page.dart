@@ -70,6 +70,15 @@ class _HomePageState extends State<HomePage> {
                                 await provider.postAddRole(body);
                                 if (provider.getAddRole) {
                                   Navigator.pop(context);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      backgroundColor: kGreenColor,
+                                      content: Text(
+                                        "Add Role Successfully",
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  );
                                 } else {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
@@ -139,6 +148,8 @@ class RoleList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var provider = Provider.of<HomeNotifier>(context, listen: true);
+
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
@@ -196,9 +207,37 @@ class RoleList extends StatelessWidget {
                                   SizedBox(
                                     width: 8,
                                   ),
-                                  Icon(
-                                    Icons.delete,
-                                    color: kRedColor,
+                                  GestureDetector(
+                                    onTap: () async {
+                                      await provider.patchDeleteRole(role.id);
+                                      if (provider.getDeleteRole) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            backgroundColor: kGreenColor,
+                                            content: Text(
+                                              "Delete Role Successfully",
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                        );
+                                      } else {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            backgroundColor: kRedColor,
+                                            content: Text(
+                                              provider.deleteRoleMessage,
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    },
+                                    child: Icon(
+                                      Icons.delete,
+                                      color: kRedColor,
+                                    ),
                                   ),
                                 ],
                               )
