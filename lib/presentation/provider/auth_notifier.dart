@@ -28,7 +28,6 @@ class AuthNotifier extends ChangeNotifier {
     await result.fold((failure) {
       _loginState = RequestState.Error;
       _loginMessage = failure.message;
-      print(_loginMessage);
       notifyListeners();
     }, (userData) {
       _loginState = RequestState.Loaded;

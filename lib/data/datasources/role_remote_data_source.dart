@@ -8,6 +8,7 @@ import 'package:roleapp/shared/shared_preference.dart';
 
 abstract class RoleRemoteDataSource {
   Future<List<RoleModel>> getAllRole();
+  Future<RoleModel> addRole(Map<String, dynamic> body);
 }
 
 class RoleRemoteDataSourceImpl implements RoleRemoteDataSource {
@@ -34,6 +35,30 @@ class RoleRemoteDataSourceImpl implements RoleRemoteDataSource {
 
     if (response.statusCode == 200) {
       return RoleResponse.fromJson(json.decode(response.body)).data;
+    } else {
+      throw ServerFailure(json.decode(response.body)["message"]);
+    }
+  }
+
+  @override
+  Future<RoleModel> addRole(Map<String, dynamic> body) async {
+    String token = await sharedPref.readString("token");
+
+    var data = json.encode(body);
+
+    final response = await client.post(
+        Uri.parse('$BASE_URL/sysparam/role-primaries'),
+        body: data,
+        headers: {
+          "Nashta-Api-Key": "RFT74DPVqBIPCDxj3XPsffY9UBk014bF",
+          "Authorization": token,
+          "Content-Type": "application/json"
+        });
+
+    print(response.body);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return AddRoleResponse.fromJson(json.decode(response.body)).data;
     } else {
       throw ServerFailure(json.decode(response.body)["message"]);
     }

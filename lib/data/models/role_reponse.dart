@@ -29,3 +29,33 @@ class RoleResponse extends Equatable {
         data,
       ];
 }
+
+class AddRoleResponse extends Equatable {
+  final int code;
+  final bool status;
+  final String message;
+  final RoleModel data;
+
+  AddRoleResponse({
+    required this.code,
+    required this.status,
+    required this.message,
+    required this.data,
+  });
+
+  factory AddRoleResponse.fromJson(Map<String, dynamic> json) =>
+      AddRoleResponse(
+        code: json["code"],
+        status: json["status"],
+        message: json["message"],
+        data: RoleModel.fromJson(json["data"]),
+      );
+
+  @override
+  List<Object?> get props => [
+        code,
+        status,
+        message,
+        data,
+      ];
+}

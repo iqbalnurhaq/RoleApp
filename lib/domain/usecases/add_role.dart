@@ -3,12 +3,12 @@ import 'package:roleapp/data/models/role_model.dart';
 import 'package:roleapp/domain/repositories/role_repository.dart';
 import 'package:roleapp/shared/failure.dart';
 
-class GetAllRole {
+class AddRole {
   final RoleRepository repository;
 
-  GetAllRole(this.repository);
+  AddRole(this.repository);
 
-  Future<Either<Failure, List<RoleModel>>> execute() {
-    return repository.getAllRole();
+  Future<Either<Failure, RoleModel>> execute(Map<String, dynamic> body) {
+    return repository.addRole(body);
   }
 }

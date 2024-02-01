@@ -6,6 +6,7 @@ import 'package:roleapp/data/repositories/auth_repository_impl.dart';
 import 'package:roleapp/data/repositories/role_repository_impl.dart';
 import 'package:roleapp/domain/repositories/auth_repository.dart';
 import 'package:roleapp/domain/repositories/role_repository.dart';
+import 'package:roleapp/domain/usecases/add_role.dart';
 import 'package:roleapp/domain/usecases/get_all_role.dart';
 import 'package:roleapp/domain/usecases/login.dart';
 import 'package:roleapp/presentation/provider/auth_notifier.dart';
@@ -20,12 +21,13 @@ void init() {
       ));
   locator.registerFactory(() => HomeNotifier(
         getAllRole: locator(),
+        addRole: locator(),
       ));
 
   //use case
   locator.registerLazySingleton(() => Login(locator()));
   locator.registerLazySingleton(() => GetAllRole(locator()));
-
+  locator.registerLazySingleton(() => AddRole(locator()));
   // repository
   locator.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(

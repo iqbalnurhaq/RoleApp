@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:roleapp/data/models/role_model.dart';
 import 'package:roleapp/presentation/provider/home_notifier.dart';
+import 'package:roleapp/presentation/widgets/input/input_text_field.dart';
 import 'package:roleapp/shared/state_enum.dart';
 import 'package:roleapp/shared/theme.dart';
 
@@ -13,6 +14,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final FocusNode addRoleFocus = FocusNode();
+  final TextEditingController addRoleController =
+      TextEditingController(text: '');
+
   @override
   void initState() {
     super.initState();
@@ -22,13 +27,79 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    var provider = Provider.of<HomeNotifier>(context, listen: true);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Role App'),
         actions: [
           IconButton(
             onPressed: () {
-              // Navigator.pushNamed(context, SearchPage.ROUTE_NAME);
+              showModalBottomSheet(
+                  context: context,
+                  builder: (context) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 30, horizontal: 16),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          InputTextField(
+                            title: 'Role Name',
+                            textController: addRoleController,
+                            focusNode: addRoleFocus,
+                            icon: 'assets/icon/ic_add.svg',
+                          ),
+                          Container(
+                            width: double.infinity,
+                            height: 55,
+                            margin: EdgeInsets.only(top: 24),
+                            child: TextButton(
+                              style: TextButton.styleFrom(
+                                backgroundColor: kGreenColor,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              onPressed: () async {
+                                var body = {
+                                  "role_name": addRoleController.text,
+                                  "is_admin": false,
+                                  "is_superadmin": false
+                                };
+                                await provider.postAddRole(body);
+                                if (provider.getAddRole) {
+                                  Navigator.pop(context);
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      backgroundColor: kRedColor,
+                                      content: Text(
+                                        provider.addRoleMessage,
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                              child:
+                                  provider.addRoleState == RequestState.Loading
+                                      ? CircularProgressIndicator(
+                                          color: kWhiteColor,
+                                        )
+                                      : Text(
+                                          'Add',
+                                          style: whiteTextStyle.copyWith(
+                                            fontSize: 16,
+                                            fontWeight: medium,
+                                          ),
+                                        ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  });
             },
             icon: Icon(Icons.add),
           )
@@ -48,7 +119,6 @@ class _HomePageState extends State<HomePage> {
                     );
                   } else if (state == RequestState.Loaded) {
                     return RoleList(value.allRole);
-                    // return HomePopularCard();
                   } else {
                     return Text('Failed');
                   }
@@ -69,82 +139,79 @@ class RoleList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height,
-      child: ListView.builder(
-        scrollDirection: Axis.vertical,
-        itemBuilder: (context, index) {
-          final role = roles[index];
-          return Container(
-            padding: const EdgeInsets.all(8),
-            child: InkWell(
-                onTap: () {
-                  // Navigator.pushNamed(
-                  //   context,
-                  //   MovieDetailPage.ROUTE_NAME,
-                  //   arguments: movie.id,
-                  // );
-                },
-                child: Container(
-                  width: 230,
-                  height: 243,
-                  margin: EdgeInsets.only(right: 24),
-                  decoration: BoxDecoration(
-                    color: kWhiteColor,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.08),
-                        blurRadius: 7,
-                      ),
-                    ],
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Column(
-                    children: [
-                      Container(
-                        width: double.infinity,
-                        height: 120,
-                      ),
-                      Padding(
-                        padding:
-                            const EdgeInsets.only(left: 10, right: 10, top: 16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              role.roleName,
-                              style: blackTextStyle,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 2,
-                              textAlign: TextAlign.start,
-                            ),
-                            SizedBox(
-                              height: 4,
-                            ),
-                            SizedBox(
-                              height: 4,
-                            ),
-                            Row(
-                              children: [
-                                Icon(Icons.edit),
-                                SizedBox(
-                                  width: 8,
-                                ),
-                                Icon(
-                                  Icons.delete,
-                                  color: kRedColor,
-                                ),
-                              ],
-                            )
-                          ],
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        height: MediaQuery.of(context).size.height,
+        child: ListView.builder(
+          scrollDirection: Axis.vertical,
+          itemBuilder: (context, index) {
+            final role = roles[index];
+            return Container(
+              padding: const EdgeInsets.all(8),
+              child: InkWell(
+                  onTap: () {},
+                  child: Container(
+                    width: 230,
+                    height: 243,
+                    margin: EdgeInsets.only(right: 24),
+                    decoration: BoxDecoration(
+                      color: kWhiteColor,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.08),
+                          blurRadius: 7,
                         ),
-                      )
-                    ],
-                  ),
-                )),
-          );
-        },
-        itemCount: roles.length,
+                      ],
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: double.infinity,
+                          height: 120,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              left: 10, right: 10, top: 16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                role.roleName,
+                                style: blackTextStyle,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 2,
+                                textAlign: TextAlign.start,
+                              ),
+                              SizedBox(
+                                height: 4,
+                              ),
+                              SizedBox(
+                                height: 4,
+                              ),
+                              Row(
+                                children: [
+                                  Icon(Icons.edit),
+                                  SizedBox(
+                                    width: 8,
+                                  ),
+                                  Icon(
+                                    Icons.delete,
+                                    color: kRedColor,
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  )),
+            );
+          },
+          itemCount: roles.length,
+        ),
       ),
     );
   }
